@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Categories — My Daily Expense Book{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4 fade-in">
+    <div>
+        <h4 class="fw-800 mb-1" style="color:#1e1b4b;">Expense Categories</h4>
+        <p class="text-muted mb-0">Organize your spending with categories</p>
+    </div>
+    <a href="{% url 'add_category' %}" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-plus-lg"></i> Add Category
+    </a>
+</div>
+
+<div class="row g-3 fade-in fade-in-1">
+    {% for category in categories %}
+    <div class="col-sm-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center justify-content-center rounded-3 flex-shrink-0"
+                     style="width:52px;height:52px;background:{{ category.color }}22;">
+                    <i class="{{ category.icon }} fs-4" style="color:{{ category.color }};"></i>
+                </div>
+                <div class="flex-grow-1 min-width-0">
+                    <h6 class="fw-700 mb-0" style="color:#1e1b4b;">{{ category.name }}</h6>
+                    <small class="text-muted">
+                        {{ category.expense_count }} expense{{ category.expense_count|pluralize }}
+                        {% if category.total_spent %}
+                        · ₹{{ category.total_spent|floatformat:0 }} total
+                        {% endif %}
+                    </small>
+                </div>
+                <a href="{% url 'delete_category' category.pk %}"
+                   class="btn btn-sm btn-outline-danger rounded-circle flex-shrink-0"
+                   style="width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;"
+                   title="Delete">
+                    <i class="bi bi-trash small"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-tags fs-1 text-muted opacity-50"></i>
+        <p class="text-muted mt-2">No categories yet.</p>
+        <a href="{% url 'add_category' %}" class="btn btn-primary">Add your first category</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

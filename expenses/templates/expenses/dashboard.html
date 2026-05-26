@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — My Daily Expense Book{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+{% if budget_exceeded %}
+<div class="alert alert-danger">
+    Warning: Your monthly budget has been exceeded!
+</div>
+{% endif %}
+<!-- Greeting -->
+<div class="d-flex align-items-center justify-content-between mb-4 fade-in">
+    <div>
+        <h4 class="fw-800 mb-1" style="color:#1e1b4b;">Good to see you, {{ user.first_name|default:user.username }}! 👋</h4>
+        <p class="text-muted mb-0">Here's your financial overview for {{ current_month_name }}.</p>
+    </div>
+    <a href="{% url 'add_expense' %}" class="btn btn-primary d-none d-sm-inline-flex align-items-center gap-2">
+        <i class="bi bi-plus-lg"></i> Add Expense
+    </a>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3 fade-in fade-in-1">
+        <div class="stat-card bg-violet">
+            <div class="icon"><i class="bi bi-calendar-month"></i></div>
+            <div class="stat-value">₹{{ total_this_month|floatformat:2 }}</div>
+            <div class="stat-label">This Month's Spending</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-in fade-in-2">
+        <div class="stat-card bg-rose">
+            <div class="icon"><i class="bi bi-wallet2"></i></div>
+            <div class="stat-value">₹{{ total_all_time|floatformat:2 }}</div>
+            <div class="stat-label">All-Time Total</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-in fade-in-3">
+        <div class="stat-card bg-teal">
+            <div class="icon"><i class="bi bi-receipt"></i></div>
+            <div class="stat-value">{{ expense_count }}</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+    </div>
+    <div class="col-6 col-lg-3 fade-in fade-in-4">
+        <div class="stat-card bg-amber">
+            <div class="icon"><i class="bi bi-tags"></i></div>
+            <div class="stat-value">
+                {% if chart_labels %}{{ chart_labels|length }}{% else %}0{% endif %}
+            </div>
+            <div class="stat-label">Active Categories</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-3 mb-4">
+    <!-- Pie chart -->
+    <div class="col-lg-5 fade-in fade-in-2">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span class="fw-700" style="color:#1e1b4b;">Spending by Category</span>
+                <span class="badge bg-primary-subtle text-primary rounded-pill">{{ current_month_name }}</span>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                {% if chart_labels %}
+                <canvas id="pieChart" style="max-height:280px;"></canvas>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="bi bi-pie-chart fs-1 text-muted opacity-50"></i>
+                    <p class="text-muted mt-2 mb-0">No expenses this month yet.</p>
+                    <a href="{% url 'add_expense' %}" class="btn btn-sm btn-primary mt-2">Add your first expense</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="col-lg-7 fade-in fade-in-3">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center">
+                <span class="fw-700" style="color:#1e1b4b;">6-Month Spending Trend</span>
+            </div>
+            <div class="card-body">
+                <canvas id="barChart" style="max-height:280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="row g-3">
+    <!-- Recent Expenses -->
+    <div class="col-lg-7 fade-in fade-in-2">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span class="fw-700" style="color:#1e1b4b;">Recent Expenses</span>
+                <a href="{% url 'expense_list' %}" class="btn btn-sm btn-outline-primary rounded-pill">View all</a>
+            </div>
+            <div class="card-body p-0">
+                {% if recent_expenses %}
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-3">Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th class="text-end pe-3">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in recent_expenses %}
+                            <tr>
+                                <td class="ps-3 fw-500">{{ expense.title }}</td>
+                                <td>
+                                    {% if expense.category %}
+                                    <span class="category-badge">
+                                        <span class="category-dot" style="background:{{ expense.category.color }};"></span>
+                                        {{ expense.category.name }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted small">Uncategorized</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small">{{ expense.date|date:"M d, Y" }}</td>
+                                <td class="text-end pe-3 fw-700" style="color:#1e1b4b;">₹{{ expense.amount|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-receipt fs-1 text-muted opacity-50"></i>
+                    <p class="text-muted mt-2">No expenses yet. <a href="{% url 'add_expense' %}">Add one!</a></p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Category breakdown -->
+    <div class="col-lg-5 fade-in fade-in-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <span class="fw-700" style="color:#1e1b4b;">Category Breakdown</span>
+            </div>
+            <div class="card-body">
+                {% if category_data %}
+                {% for item in category_data %}
+                <div class="d-flex align-items-center mb-3">
+                    <span class="category-dot me-2" style="background:{{ item.category__color|default:'#6c63ff' }};width:10px;height:10px;"></span>
+                    <span class="small flex-grow-1">{{ item.category__name|default:"Uncategorized" }}</span>
+                    <span class="fw-700 small">₹{{ item.total|floatformat:2 }}</span>
+                </div>
+                {% if total_this_month %}
+                <div class="progress mb-3" style="height:5px;margin-top:-8px;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width:{% widthratio item.total total_this_month 100 %}%;background:{{ item.category__color|default:'#6c63ff' }};">
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">No data for this month.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Pie Chart (Category Breakdown) ──
+{% if chart_labels %}
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+            data: {{ chart_amounts|safe }},
+            backgroundColor: {{ chart_colors|safe }},
+            borderWidth: 2,
+            borderColor: '#fff',
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { font: { family: 'Plus Jakarta Sans', size: 12 }, padding: 12 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ₹₹{ctx.raw.toFixed(2)}`
+                }
+            }
+        }
+    }
+});
+{% endif %}
+
+// ── Bar Chart (Monthly Trend) ──
+const barCtx = document.getElementById('barChart').getContext('2d');
+new Chart(barCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ monthly_trend_labels|safe }},
+        datasets: [{
+            label: 'Monthly Spending (₹)',
+            data: {{ monthly_trend_data|safe }},
+            backgroundColor: 'rgba(108,99,255,0.15)',
+            borderColor: '#6c63ff',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: { label: ctx => ` ₹₹{ctx.raw.toFixed(2)}` }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: 'rgba(0,0,0,.04)' },
+                ticks: {
+                    callback: val => '₹' + val,
+                    font: { family: 'Plus Jakarta Sans' }
+                }
+            },
+            x: {
+                grid: { display: false },
+                ticks: { font: { family: 'Plus Jakarta Sans' } }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

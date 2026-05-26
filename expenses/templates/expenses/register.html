@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Register — My Daily Expense Book{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5"
+     style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #6c63ff 100%);">
+    <div class="card p-4 p-md-5" style="width:100%;max-width:520px;border-radius:24px;margin:1rem;">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+                 style="width:56px;height:56px;background:#6c63ff;">
+                <i class="bi bi-person-plus fs-3 text-white"></i>
+            </div>
+            <h2 class="fw-800" style="color:#1e1b4b;">Create your account</h2>
+            <p class="text-muted mb-0">Start tracking expenses for free</p>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label fw-600 small">First Name</label>
+                    {{ form.first_name }}
+                    {% for error in form.first_name.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-600 small">Last Name</label>
+                    {{ form.last_name }}
+                    {% for error in form.last_name.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-600 small">Username</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-600 small">Email Address</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-600 small">Password</label>
+                    {{ form.password1 }}
+                    {% for error in form.password1.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                    <div class="form-text">Min 8 characters. Can't be too common or entirely numeric.</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-600 small">Confirm Password</label>
+                    {{ form.password2 }}
+                    {% for error in form.password2.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-700 fs-6 mt-4">
+                <i class="bi bi-rocket-takeoff me-2"></i>Create Account
+            </button>
+        </form>
+
+        <hr class="my-4">
+        <p class="text-center text-muted mb-0">
+            Already have an account?
+            <a href="{% url 'login' %}" class="text-decoration-none fw-600" style="color:#6c63ff;">Sign in</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

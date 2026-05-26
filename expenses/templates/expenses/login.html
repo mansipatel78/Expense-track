@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}Login — My Daily Expense Book{% endblock %}
+
+{% block auth_content %}
+<div class="min-vh-100 d-flex" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #6c63ff 100%);">
+    <!-- Left panel -->
+    <div class="d-none d-lg-flex flex-column justify-content-center px-5 text-white" style="width:45%; background:rgba(0,0,0,.15);">
+        <div class="mb-4">
+            <h1 class="fw-800 display-5 mb-2" style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;">
+                <i class="bi bi-wallet2"></i> My Daily Expense Book
+            </h1>
+            <p class="fs-5 opacity-75">Take control of your finances, one expense at a time.</p>
+        </div>
+        <div class="d-flex flex-column gap-3">
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.1);">
+                <i class="bi bi-pie-chart-fill fs-3 text-warning"></i>
+                <div>
+                    <div class="fw-600">Visual Analytics</div>
+                    <small class="opacity-75">Charts & insights at a glance</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.1);">
+                <i class="bi bi-tags-fill fs-3 text-success"></i>
+                <div>
+                    <div class="fw-600">Smart Categories</div>
+                    <small class="opacity-75">Organize your spending</small>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background:rgba(255,255,255,.1);">
+                <i class="bi bi-download fs-3 text-info"></i>
+                <div>
+                    <div class="fw-600">Export to CSV</div>
+                    <small class="opacity-75">Your data, your way</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right panel: login form -->
+    <div class="d-flex align-items-center justify-content-center flex-grow-1">
+        <div class="card p-4 p-md-5" style="width:100%;max-width:440px;border-radius:24px;">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-3"
+                     style="width:56px;height:56px;background:#6c63ff;">
+                    <i class="bi bi-wallet2 fs-3 text-white"></i>
+                </div>
+                <h2 class="fw-800" style="color:#1e1b4b;">Welcome back</h2>
+                <p class="text-muted mb-0">Sign in to your account</p>
+            </div>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-600 text-muted small text-uppercase" style="letter-spacing:.05em;">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0" style="border-radius:10px 0 0 10px;">
+                            <i class="bi bi-person text-muted"></i>
+                        </span>
+                        <input type="text" name="username" class="form-control border-start-0 ps-0"
+                               placeholder="Enter username" style="border-radius:0 10px 10px 0;" required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-600 text-muted small text-uppercase" style="letter-spacing:.05em;">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0" style="border-radius:10px 0 0 10px;">
+                            <i class="bi bi-lock text-muted"></i>
+                        </span>
+                        <input type="password" name="password" id="passwordField" class="form-control border-start-0 ps-0"
+                               placeholder="Enter password" style="border-radius:0 10px 10px 0;" required>
+                        <button type="button" class="btn btn-light border"
+                                onclick="togglePassword()" style="border-radius:0 10px 10px 0;">
+                            <i class="bi bi-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-700 fs-6">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </button>
+            </form>
+
+            <hr class="my-4">
+            <p class="text-center text-muted mb-0">
+                Don't have an account?
+                <a href="{% url 'register' %}" class="text-decoration-none fw-600" style="color:#6c63ff;">Create one free</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePassword() {
+    const f = document.getElementById('passwordField');
+    const i = document.getElementById('eyeIcon');
+    if (f.type === 'password') { f.type = 'text'; i.className = 'bi bi-eye-slash'; }
+    else { f.type = 'password'; i.className = 'bi bi-eye'; }
+}
+</script>
+{% endblock %}

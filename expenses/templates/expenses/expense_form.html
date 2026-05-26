@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} — My Daily Expense Book{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-3 mb-4 fade-in">
+            <a href="{% url 'expense_list' %}" class="btn btn-sm btn-outline-secondary rounded-circle"
+               style="width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h4 class="fw-800 mb-0" style="color:#1e1b4b;">{{ title }}</h4>
+                <p class="text-muted mb-0 small">
+                    {% if expense %}Editing: {{ expense.title }}{% else %}Fill in the details below{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="card fade-in fade-in-1">
+            <div class="card-body p-4">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600">Expense Title <span class="text-danger">*</span></label>
+                        {{ form.title }}
+                        {% for error in form.title.errors %}
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600">Amount (₹) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">₹</span>
+                                {{ form.amount }}
+                            </div>
+                            {% for error in form.amount.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600">Date <span class="text-danger">*</span></label>
+                            {{ form.date }}
+                            {% for error in form.date.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-600">
+                            Category
+                            <a href="{% url 'add_category' %}" class="text-decoration-none small ms-2"
+                               style="color:#6c63ff;">+ Add new</a>
+                        </label>
+                        {{ form.category }}
+                        {% for error in form.category.errors %}
+                        <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-600">Description <span class="text-muted small">(optional)</span></label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1 py-2 fw-700">
+                            <i class="bi bi-check-lg me-2"></i>{{ button_text }}
+                        </button>
+                        <a href="{% url 'expense_list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick tip -->
+        <div class="alert mt-3 fade-in fade-in-2" style="background:#ede9fe;border:none;border-radius:12px;color:#4c1d95;">
+            <i class="bi bi-lightbulb me-2"></i>
+            <strong>Tip:</strong> Add categories to better organize and visualize your spending on the dashboard.
+        </div>
+    </div>
+</div>
+{% endblock %}
