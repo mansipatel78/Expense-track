@@ -8,7 +8,7 @@ instead of hardcoding paths.
 
 from django.urls import path
 from . import views
-app_name='expenses'
+
 urlpatterns = [
     # Authentication
     path('', views.login_view, name='login'),           # Root URL shows login
