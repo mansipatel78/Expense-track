@@ -14,6 +14,7 @@ SECRET_KEY = 'django-insecure-change-this-in-production-use-env-variable'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+APPEND_SLASH =True
 
 # Installed apps - Django apps that are active
 INSTALLED_APPS = [
